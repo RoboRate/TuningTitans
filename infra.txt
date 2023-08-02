@@ -1,0 +1,14 @@
+— -資料夾結構 — -
+Flask — — — — — — -資料夾
+ | — -app.py — — 當前.py模組作為資料夾結構為總目錄
+ | — -static — — — 靜態目錄資料夾
+ |   |_css — — — 網頁樣式
+ |   |_images — — 網頁圖片
+ | — -templates — -模板目錄資料夾
+ |   |_index.html — -首頁
+ |   |_login.html — -登入頁面
+ |   |_Q&A(JSONL-ready to fine-tuning)
+ |   |_Fine-tuning (參數頁面)
+ |   |_Benchmark
+ |   |_Report
+ — — — — — — — — — — — — 
