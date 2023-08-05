@@ -1,0 +1,11 @@
+homeassistant:
+  name: icare
+  latitude: 121.5380814821828
+  longitude: 25.026200958083987
+  elevation: 12
+  unit_system: metric
+  currency: NTD
+  external_url: http://idontcare
+  internal_url: http://idontcaretoo
+  allowlist_external_dirs:
+    - "/backup"

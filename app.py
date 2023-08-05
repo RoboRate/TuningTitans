@@ -1,13 +1,13 @@
 import os
-from flask import Flask, redirect, render_template, request, session, url_for
+from flask import Flask, redirect, render_template, request, session, url_for, send_file
 import openai
 import pymysql
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
-UserAccount = os.getenv("USER_ACCOUNT")
-UserPassword = os.getenv("USER_PASSWORD")
+userAccount = os.getenv("USER_ACCOUNT")
+userPassword = os.getenv("USER_PASSWORD")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -16,7 +16,7 @@ def login():
         password = request.form["password"]
 
         # 身分驗證
-        if name == UserAccount and password == UserPassword:
+        if name == userAccount and password == userPassword:
             session["logged_in"] = True
             return redirect(url_for("index"))
 
@@ -32,30 +32,27 @@ def index():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
 
+    previewData = None  # 初始化檔案預覽內容為空
+    filePath = None  # 初始化檔案路徑為空
+
+    # 現在可以在這裡處理表單提交，因為使用者已經登入
     if request.method == "POST":
-        # 現在可以在這裡處理表單提交，因為使用者已經登入
-        animal = request.form["animal"]
-        response = openai.Completion.create(
-            model="text-davinci-003",
-            prompt=generate_prompt(animal),
-            temperature=0.6,
-        )
-        return redirect(url_for("index", result=response.choices[0].text))
+        file = request.files["fileToUpload"]
+        if file:
+            filename = file.filename
+            if filename.endswith(".txt") or filename.endswith(".csv"):
+                content = file.read().decode("utf-8")
+                previewData = content  # 將檔案內容傳遞到前端供預覽
 
-    result = request.args.get("result")
-    return render_template("index.html", result=result)
+                # 儲存上傳的檔案至伺服器端，以便下載
+                filePath = os.path.join("uploads", filename)
+                file.save(filePath)
 
-def generate_prompt(animal):
-    return """Suggest three names for an animal that is a superhero.
+                # 儲存內容至檔案
+                with open(os.path.join("uploads", filename), "w", encoding="utf-8",newline=os.linesep) as f:
+                    f.write(content)
 
-Animal: Cat
-Names: Captain Sharpclaw, Agent Fluffball, The Incredible Feline
-Animal: Dog
-Names: Ruff the Protector, Wonder Canine, Sir Barks-a-Lot
-Animal: {}
-Names:""".format(
-        animal.capitalize()
-    )
+    return render_template("index.html", previewData=previewData, filePath=filePath)
 
 if __name__ == "__main__":
     app.run(debug=True)
