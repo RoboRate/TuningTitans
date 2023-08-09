@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <head>
-  <title>OpenAI Quickstart</title>
+  <title>TuningTitans</title>
   <link
     rel="shortcut icon"
     href="{{ url_for('static', filename='dog.png') }}"
@@ -10,12 +10,26 @@
 
 <body>
   <img src="{{ url_for('static', filename='/images/dog.png') }}" class="icon" />
-  <h3>Name my pet</h3>
-  <form action="/" method="post">
-    <input type="text" name="animal" placeholder="Enter an animal" required />
-    <input type="submit" value="Generate names" />
+  <h3>Upoload file</h3>
+  <form action="/" method="post" enctype="multipart/form-data">
+    <input type="file" name="fileToUpload" accept=".csv, .txt" required />
+    <input type="submit"/>
   </form>
+
+  {% if previewData %}
+  <div class="preview">
+    <h4>檔案預覽：</h4>
+    <pre>{{ previewData }}</pre>
+  </div>
+  {% endif %}
+
   {% if result %}
   <div class="result">{{ result }}</div>
+  {% endif %}
+
+  {% if file_path %}
+  <div class="download">
+    <a href="{{ file_path }}" download>Download File</a>
+  </div>
   {% endif %}
 </body>
