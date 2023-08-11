@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<head>
+  <title>TuningTitans API</title>
+  <link
+    rel="shortcut icon"
+    href="{{ url_for('static', filename='dog.png') }}"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='/css/main.css') }}" />
+</head>
+
+<body>
+  <h3>Fine-tuning Model</h3>
+  <form action="/api2" method="post" enctype="multipart/form-data">
+    <label for="training_file">training_file*</label>
+    <input type="file" name="training_file" accept=".csv, .txt" required />
+    <span>*必填欄位，只能選jsonl檔案</span>
+    <br>
+    <label for="validation_file">validation_file*</label>
+    <input type="file" name="validation_file" accept=".csv, .txt" required />
+    <span>*必填欄位，只能選jsonl檔案</span>
+    <br>
+    <label for="model">model*</label>
+    <select name="model">
+      <option value="davinci">davinci</option>
+      <option value="curie">curie</option>
+      <option value="babbage">babbage</option>
+    </select>
+    <br>
+    <label for="n_epochs">n_epochs</label>
+    <input type="number" name="n_epochs" value="4" />
+    <span>(defaults to 4)</span>
+    <br>
+    <label for="batch_size">batch_size</label>
+    <input type="number" name="batch_size" />
+    <span>((defaults to ~0.2% of the number of examples in the training set, capped at 256)		
+      defaults to 4)</span>
+    <br>
+    <label for="learning_rate_multiplier">learning_rate_multiplier</label>
+    <input type="number" name="learning_rate_multiplier" step="0.05" />
+    <span>(defaults to 0.05, 0.1, or 0.2 depending on final batch_size)</span>
+    <br>
+    <input type="submit" value="執行訓練模型" />
+  </form>
+</body>
