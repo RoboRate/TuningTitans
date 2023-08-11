@@ -73,6 +73,18 @@ def index():
                 
     return render_template("index.html", previewData=previewData, filePath=filePath)
 
+@app.route("/api2", methods=["GET", "POST"])
+def api2():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    status = {
+        "fine_tuned_model": None,
+        "id": "ft-mNCMDL0DMgzOox4bLrs3tgnr",
+        "status": "pending"
+    }
+
+    return render_template("api2.html", status=status)
 
 if __name__ == "__main__":
     app.run(debug=True)
