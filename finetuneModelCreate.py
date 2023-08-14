@@ -1,5 +1,6 @@
 import openai
 import os
+import requests
 
 # openai.organization = os.getenv("OPENAI_API_ORG")
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -7,6 +8,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 training_file = os.getenv("OPENAI_TRAININGFILE_ID")
 validation_file = os.getenv("OPENAI_VALIDATIONFILE_ID")
 model_id = os.getenv("OPENAI_FINETUNED_MODEL")
+model_result_file=os.getenv("OPENAI_MODELRESULTFILE")
 
 def modelCreate(**kwargs): #訓練模型，取得模型id
     training_file = kwargs.get("training_file")
@@ -46,9 +48,18 @@ def modelStatusCheck(modelID): #取得已開始訓練的模型，是否已訓練
     #print(response)
     return {"fine_tuned_model":fine_tuned_model, "id": modelID, "status": status}
 
+def getModelAnalysis(modelResultFileId): 
+    url = f'https://api.openai.com/v1/files/{modelResultFileId}/content'
+    headers = {"Authorization": f'Bearer {openai.api_key}'}
+    response = requests.get(url, headers=headers)
+    return response.text
+
 if __name__ == "__main__":
-    print(modelStatusCheck(model_id))
-    
+    #print(modelStatusCheck(model_id))
+    response = getModelAnalysis(model_result_file)
+    with open("result0811.csv", "w", encoding="UTF-8") as file:
+        file.write(response)    
+
     # 呼叫create model的方式
     # requestParams = {
     # "training_file": training_file,
