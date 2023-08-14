@@ -2,13 +2,7 @@ import openai
 import os
 import requests
 
-# openai.organization = os.getenv("OPENAI_API_ORG")
 openai.api_key = os.getenv("OPENAI_API_KEY")
-
-training_file = os.getenv("OPENAI_TRAININGFILE_ID")
-validation_file = os.getenv("OPENAI_VALIDATIONFILE_ID")
-model_id = os.getenv("OPENAI_FINETUNED_MODEL")
-model_result_file=os.getenv("OPENAI_MODELRESULTFILE")
 
 def modelCreate(**kwargs): #訓練模型，取得模型id
     training_file = kwargs.get("training_file")
@@ -45,26 +39,32 @@ def modelStatusCheck(modelID): #取得已開始訓練的模型，是否已訓練
     response = openai.FineTune.retrieve(modelID)
     status = response['status']
     fine_tuned_model = response['fine_tuned_model']
-    #print(response)
-    return {"fine_tuned_model":fine_tuned_model, "id": modelID, "status": status}
+    result_files = response['result_files'][0]['id']
+    print(response)
+    return {"fine_tuned_model":fine_tuned_model, "id": modelID, "status": status, "result_files": result_files}
 
 def getModelAnalysis(modelResultFileId): 
     url = f'https://api.openai.com/v1/files/{modelResultFileId}/content'
     headers = {"Authorization": f'Bearer {openai.api_key}'}
     response = requests.get(url, headers=headers)
+    fileName = modelResultFileId + "_modelAnalysis.csv" 
+    with open(fileName, "w", encoding="UTF-8") as file:
+        file.write(response.text)    
     return response.text
 
 if __name__ == "__main__":
-    #print(modelStatusCheck(model_id))
+    #取得model狀態
+    # davinciModelId = 'ft-bJsyVOAiV3lfmzrUGvPLGSUt'
+    # response1 = modelStatusCheck(davinciModelId)
+    # print('davinci model:')
+    # print(response1)
+    # print('================================')
+        
+    adaModelId = 'ft-l2tBUwUM9Kud4Z5lNgM0VYmB'
+    response2 = modelStatusCheck(adaModelId)
+    print('ada model:')
+    print(response2)
+    
+    #已訓練完成的model，取得analysis結果
+    model_result_file = 'file-hHXxpLipH6tkzJwPl916NnrM'
     response = getModelAnalysis(model_result_file)
-    with open("result0811.csv", "w", encoding="UTF-8") as file:
-        file.write(response)    
-
-    # 呼叫create model的方式
-    # requestParams = {
-    # "training_file": training_file,
-    # "validation_file": validation_file,
-    # "model": "davinci",
-    # "n_epochs": 4
-    # }
-    # response = modelCreate(**requestParams)
