@@ -2,6 +2,8 @@ import os
 from flask import Flask, redirect, render_template, request, session, url_for
 import openai
 import pymysql
+from tempfile import NamedTemporaryFile
+
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -56,6 +58,37 @@ Animal: {}
 Names:""".format(
         animal.capitalize()
     )
+
+
+
+
+
+
+
+
+
+#######################Benchmark
+# @app.route('/', methods=['GET', 'POST'])
+# def BenchmarkReport():
+#     if request.method == 'POST':
+#         uploaded_file = request.files['jsonl_file']
+#         name = request.form['name']
+
+#         with NamedTemporaryFile(delete=False, suffix='.jsonl') as temp_file:
+#             temp_path = temp_file.name
+#             uploaded_file.save(temp_path)
+#         # Generate answers using the provided dataset_path and model_name
+#         dataset_path = temp_path
+#         model_name = request.form['model_name']
+#         result = generateAnswers(dataset_path, [model_name, "davinci"])
+#         print(result)
+#         # Evaluate the result using the evalWithRubric function
+#         evaluation_output = evalWithRubric(result, [model_name, "davinci"])
+#         print(evaluation_output)
+
+#         os.remove(temp_path)  # Clean up the temporary file
+#         return render_template('index.html', result=result, evaluation_output=evaluation_output, model_name=model_name)
+#     return render_template('index.html')
 
 if __name__ == "__main__":
     app.run(debug=True)
