@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head> 
+    <link
+    rel="shortcut icon"
+    href="{{ url_for('static', filename='/images/Roboo.png') }}"
+  />
+  <title>Fine-tuning Model</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
+  <link rel="icon" href="images/dog.png">
+</head>
+<body>
+  <h2 class="center">
+    <a href="/qadesign">Q&A Design</a>
+    <a href="/finetuning">Fine-tuning</a>
+    <a href="/benchmark">Benchmark</a>
+  </h2>
+  <form action="/finetuning" method="post" enctype="multipart/form-data">
+    <h3 for="training_file">training_file<span style="color:red">*</span></h3>
+    <input id="submit" type="file" name="training_file" accept=".jsonl" required />
+    <span>*必填欄位，只能選jsonl檔案</span><br>
+    <br>
+    <label for="validation_file">validation_file<span style="color:red">*</span></label>
+    <input id="submit" type="file" name="validation_file" accept=".jsonl" required />
+    <span>*必填欄位，只能選jsonl檔案</span><br>
+    <br>
+    <input id="submit" type="submit" value="檔案驗證" />
+    <br>
+    <br>
+  </form>
+  <form>
+    <h4>檔案驗證狀態：</h4>
+    {% if status %}
+      <pre>{{ status.get('training_file_status', 'No status available') }}</pre>
+      <pre>{{ status.get('validation_file_status', 'No status available') }}</pre>
+    {% else %}
+      <pre>No status available</pre>
+    {% endif %}
+  </form>
+  <form action="/train_model" method="post">
+
+    <label for="training_file">training_file.id<span style="color:red">*</span></label>
+    <input id="submit" type="text" name="training_file"  />
+    <br>
+    <br>
+    <label for="validation_file">validation_file.id<span style="color:red">*</span></label>
+    <input id="submit" type="text" name="validation_file"  />
+    <br>
+    <br>
+    <label for="model">model<span style="color:red">*</span></label>
+    <select id="submit"id="model" name="model" required>
+      <option value="davinci">davinci</option>
+      <option value="curie">curie</option>
+      <option value="babbage">babbage</option>
+      <option value="ada">ada</option>
+    </select><br>
+    <br>
+    <label for="n_epochs">n_epochs</label>
+    <input id="submit" type="number" name="n_epochs" />
+    <span>(defaults to 4)</span><br>
+    <br>
+    <label for="batch_size">batch_size</label>
+    <input id="submit" type="number" name="batch_size" max="256" />
+    <span>((defaults to ~0.2% of the number of examples in the training set, capped at 256)</span><br>
+    <br>
+    <label for="learning_rate_multiplier">learning_rate_multiplier</label>
+    <input id="submit" type="number" name="learning_rate_multiplier" step="0.05" min="0" max="1" />
+    <span>(defaults to 0.05, 0.1, or 0.2 depending on final batch_size)</span><br>
+    <br>
+    <input id="submit" type="submit" value="訓練模型" />
+  </form>
+  <form action="/get_model_status" method="get">
+    <label for="model_id">請輸入模型ID：</label>
+    <input id="submit"  type="text" name="model_id" required>
+    <input id="submit" type="submit" value="查詢訓練狀態" />
+    <h4>查詢模型訓練狀態：</h4>
+    {% if model_status %}
+      <pre>{{ model_status }}</pre>
+    {% else %}
+      <pre>No status available</pre>
+    {% endif %}
+  </form>
+  <form>
+    <h4>模型訓練狀態：</h4>
+    {% if model_status and model_status.get('status') == 'succeeded' %}
+        <pre>{{ model_status.get('result_files') }}</pre>
+        {% for result_file in model_status.get('result_files', []) %}
+            <pre>Model Training Succeeded</pre>
+            <a id="submit" href="/get_model_result/{{ result_file.id }}">取得模型結果</a>
+        {% endfor %}
+    {% else %}
+        <pre>Still Training or Training yet</pre>
+    {% endif %}
+</form>
+
+</body>
+</html>

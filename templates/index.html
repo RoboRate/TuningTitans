@@ -1,21 +1,40 @@
 <!DOCTYPE html>
 <head>
-  <title>OpenAI Quickstart</title>
-  <link
+  <head> 
+    <link
     rel="shortcut icon"
-    href="{{ url_for('static', filename='dog.png') }}"
+    href="{{ url_for('static', filename='/images/Roboo.png') }}"
   />
-  <link rel="stylesheet" href="{{ url_for('static', filename='/css/main.css') }}" />
+  <title>TuningTitans</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
 </head>
 
 <body>
-  <img src="{{ url_for('static', filename='/images/dog.png') }}" class="icon" />
-  <h3>Name my pet</h3>
-  <form action="/" method="post">
-    <input type="text" name="animal" placeholder="Enter an animal" required />
-    <input type="submit" value="Generate names" />
+  <h3 class="center">
+    <a href="/qadesign">Q&A Design</a>
+    <a href="/finetuning">Fine-tuning</a>
+    <a href="/benchmark">Benchmark</a>
+  </h3>
+  <form action="/qadesign" method="post" enctype="multipart/form-data">
+    <h3>Upoload file</h3>
+    <input id="submit" type="file" name="fileToUpload" accept=".jsonl" required />
+    <input id="submit" type="submit"/>
   </form>
+
+  {% if previewData %}
+  <div class="preview">
+    <h4>檔案預覽：</h4>
+    <pre>{{ previewData }}</pre>
+  </div>
+  {% endif %}
+
   {% if result %}
   <div class="result">{{ result }}</div>
+  {% endif %}
+
+  {% if file_path %}
+  <div class="download">
+    <a href="{{ file_path }}" download>Download File</a>
+  </div>
   {% endif %}
 </body>
