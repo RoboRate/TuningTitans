@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <head> 
-    <link
-    rel="shortcut icon"
-    href="{{ url_for('static', filename='/images/Roboo.png') }}"
-  />
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Benchmark</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
-</head>
+
+  <head>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='/images/Roboo.png') }}" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benchmark</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
+  </head>
+
 <body>
   <h3 class="center">
     <a href="/qadesign">ConvertData</a>
@@ -30,19 +30,19 @@
     </div>
     <p class="center">（最多十題）上傳資料格式限定為JSONL，例如：</p>
     <pre class="center">
-      {"prompt": "函數的定義域是函數中什麼的集合？", "completion": "輸入值\n"} <br />
-      {"prompt": "函數的對應域是函數中什麼的集合？", "completion": "輸出值\n"} <br />
-      {"prompt": "約在17世紀末出現的函數為現在的什麼？", "completion": "可導函數\n"} <br />
+      {"prompt": "******西院餐廳二樓使用變質土豆炒菜,然後進行售賣。諮詢如何處理。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "是食品安全問題\n"}<br />
+      {"prompt": "諮詢如何辦理餐飲行業的食品經營許可證。\n請問這是食品安全問題或非食品安全問題?\n", "completion": " 非食品安全問題\n"} <br />
+      {"prompt": "擺攤店家報有人在吃霸王餐。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "非食品安全問題\n"} <br />
       {"prompt": "{想測試的問題}", "completion": "{標準答案}"} <br />
+    <div>示範資料取自:https://www.luge.ai/?ref=ruder.io#/luge/dataDetail?id=71</div>>
     </pre>
-
-    <h4 class="center">Context:</h4>
+    <h4 class="center">Context:（請gpt-3.5-turbo打分數）</h4>
     <p class="center">您是一個評分的老師，請透過學生的實際回答與標準回答的內容比較來做評估。<br />
       評估學生的實際回答問題的表現。</p>
     <p class="center">
       [評分邏輯]：<br />
       1. 將實際回答內容與標準回答內容進行比較，忽略風格、語法、順序或標點的差異。<br />
-      2. 如果兩者回覆的內容，只是表達方式和詳細程度不同，請當作相同的回答。<br />
+      2. 對於提出的問題，評估學生是否有回答相對應的答案，並且將學生的實際回答與標準回答進行比較。<br />
       3. 實際回答可能是標準回答的子集或超集，或者可能與標準回答有衝突。<br />
       [評分資料結束]</p>
     <p class="center">
@@ -50,36 +50,21 @@
       (0分)實際回答跟標準回答沒有任何交集。<br />
       (1~3分)實際回答只包含部分標準回答內容。<br />
       (4~6分)實際回答大部分包含標準回答。<br />
-      (7~10分)實際回答都包含標準回答。</p>
+      (7~10分)實際回答與標準回答的內容相符。</p>
 
     <h4 class="center">產出benchmark report</h4>
     <p>Your model answer sheet</p>
-    <pre>
-      {
-        "customer_msg": [
-          "靖難之役",
-          "李景隆之變",
-          "明成祖洪武南巡"
-        ],
-        "context": [
-          "中，東面的進攻被朝鮮國拒絕，東平立即退出戰爭。\n\n靖難之役是東面的最後一次戰爭，盡管這次戰爭",
-          "，致光風遭拒，時年二十六歲（公元前54年）。\n\n《荊楚墓誌銘》提及，公元前54年，李景隆和後人",
-          "時，對土地進行改革，鼓勵农耕，融入經濟生活。\n\n清朝明成祖洪武南巡時，對土地進行改革，",
-          "。辽阔的海域拓展了中国的航海疆土，推动了中国的科技和文化的進步。\n\n註：鄭和下西洋是自明代开始",
-          "，開拓海外貿易與外交，開創中國海外貿易與外交的輝煌時期。\n\n6．科技與文化的發展：明朝科技與",
-          "克里斯多夫舉例說：「當某人傳遞一張照片時，他可把位址(addresses)、尺寸和深度等資訊提供給照片，這"
-        ],
-        "ideal": [
-          "1402年，明太祖之孫朱棣與兄長朱標間的內戰，最終朱棣勝利並篡位登基。",
-          "1402年，明成祖朱棣篡位後，討伐當時皇帝朱標的軍事行動，成功鞏固自己的皇位。",
-          "1406年至1424年間，明成祖進行的多次南巡，加強對南方地區的控制，鞏固中央集權。"
-        ]
-      }
-    </pre>
+    {% for entry in results %}
+    <h2>Model Name: {{ entry.model_name }}</h2>
+    <h3>Your model answer sheet:</h3>
+    <pre>{{ entry.model_result | safe }}</pre>
+    <h3>Your model's score</h3>
+    <pre>{{ entry.model_evaluation | safe }}</pre>
+    {% endfor %}
 
-    <h4 class="center">Question: customer_msg；Your model answer: context；Ideal answer: ideal</h4>
+    <h4 class="center">Question:Q&A問答裡的問題；YourModelAnswer: 模型的回答；IdealAnswer: Q&A問答裡的標準答案</h4>
 
-    <h4 class="center">Answer Result</h4>
+    <!-- <h4 class="center">Answer Result</h4>
     <pre>
       問題1：1
       問題2：1
@@ -95,11 +80,12 @@
       總分數：11
       題目數：11
       平均分數：1.0
-    </pre>
+    </pre> -->
 
     <div class="form-group-button">
       <input id="submit" type="submit" value="提交" />
     </div>
   </form>
 </body>
+
 </html>
