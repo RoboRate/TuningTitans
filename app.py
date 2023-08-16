@@ -8,7 +8,8 @@ import tempfile
 from models import createJsonlFromDocuments
 import finetuneModelCreate as createModel
 import finetunePrepareData as prepareData
-
+import Benchmark as benchmarkreport
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
@@ -187,15 +188,35 @@ def get_model_result(model_result_file_id):
 def benchmark():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
+    result = None
 
-    return render_template("api3.html")
+    if request.method == "POST":
+        # 獲取上傳的檔案
+        qna_data = request.files["qna_data"]
+        fine_tuned_model_id = request.form.get("fine_tuned_model_id")
+        #從fine_tuned_model_id提取出raw_model的名稱
+        raw_model = fine_tuned_model_id.split(":")[0]
+        model_names = [fine_tuned_model_id, raw_model]
 
+        if qna_data and fine_tuned_model_id and model_names:
+            #暫時儲存上傳檔案
+            temp_file_path = os.path.join(tempfile.gettempdir(), secure_filename(qna_data.filename))
+            qna_data.save(temp_file_path)
+            # 呼叫generateAnswers函式取得模型問答結果
+            results = []
+            for model_name in model_names:
+                model_result = benchmarkreport.generateAnswers(dataset_path=temp_file_path, model_name=model_name)
+                model_evaluation = benchmarkreport.evalWithRubric(model_result)
 
+                results.append({
+                    "model_name": model_name,
+                    "model_result": model_result,
+                    "model_evaluation": model_evaluation
+                })
+            os.remove(temp_file_path)
+            return render_template("api3.html", results=results)
 
-
-
-
-
+    return render_template("api3.html", results=None)
 
 if __name__ == "__main__":
     app.run(debug=True)

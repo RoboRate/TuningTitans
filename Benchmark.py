@@ -97,17 +97,3 @@ def evalWithRubric(test_set):
 
     response = getCompletionFromMessages(messages)
     return response
-
-#########以下是要串到前端#############
-if __name__ == "__main__":
-    dataset_path = "C:\\Users\\Sherry Wu\\.vscode\\Roborate_OpenAI\\QA.jsonl"
-    #輸入fine_tuned_model的id和(預設)raw_model
-    model_names = ["ada:ft-personal-2023-08-14-06-31-09", "ada"]
-    #輸出fine_tuned_model和raw model結果
-    for model_name in model_names:
-        result = generateAnswers(dataset_path, model_name)
-        print(f"模型問答結果: {model_name}")
-        print(result)
-        evaluation_output = evalWithRubric(result)
-        print(f"模型評估結果: {model_name}")
-        print(evaluation_output)
