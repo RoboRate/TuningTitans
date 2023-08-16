@@ -39,32 +39,19 @@ def modelStatusCheck(modelID): #取得已開始訓練的模型，是否已訓練
     response = openai.FineTune.retrieve(modelID)
     status = response['status']
     fine_tuned_model = response['fine_tuned_model']
-    result_files = response['result_files'][0]['id']
-    print(response)
-    return {"fine_tuned_model":fine_tuned_model, "id": modelID, "status": status, "result_files": result_files}
 
-def getModelAnalysis(modelResultFileId): 
+    print(response)
+    return response
+
+def getModelAnalysis(modelResultFileId): #取得分析結果
     url = f'https://api.openai.com/v1/files/{modelResultFileId}/content'
     headers = {"Authorization": f'Bearer {openai.api_key}'}
     response = requests.get(url, headers=headers)
-    fileName = modelResultFileId + "_modelAnalysis.csv" 
-    with open(fileName, "w", encoding="UTF-8") as file:
-        file.write(response.text)    
-    return response.text
-
-if __name__ == "__main__":
-    #取得model狀態
-    # davinciModelId = 'ft-bJsyVOAiV3lfmzrUGvPLGSUt'
-    # response1 = modelStatusCheck(davinciModelId)
-    # print('davinci model:')
-    # print(response1)
-    # print('================================')
-        
-    adaModelId = 'ft-l2tBUwUM9Kud4Z5lNgM0VYmB'
-    response2 = modelStatusCheck(adaModelId)
-    print('ada model:')
-    print(response2)
     
-    #已訓練完成的model，取得analysis結果
-    model_result_file = 'file-hHXxpLipH6tkzJwPl916NnrM'
-    response = getModelAnalysis(model_result_file)
+    app_root = os.path.dirname(os.path.abspath(__file__))
+    temp_folder = os.path.join(app_root, "ModelAnalysis")
+
+    if not os.path.exists(temp_folder):
+        os.makedirs(temp_folder)
+    
+    return response.text
