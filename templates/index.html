@@ -17,16 +17,26 @@
   </h3>
   <form action="/qadesign" method="post" enctype="multipart/form-data">
     <h3>Upoload file</h3>
-    <input id="submit" type="file" name="fileToUpload" accept=".jsonl" required />
+    <input id="submit" type="file" name="fileToUpload" accept=".txt" required />
     <input id="submit" type="submit"/>
   </form>
 
-  {% if previewData %}
+  <!-- {% if previewData %}
   <div class="preview">
     <h4>檔案預覽：</h4>
     <pre>{{ previewData }}</pre>
   </div>
-  {% endif %}
+  {% endif %} -->
+  {% if previewData %}
+<div class="preview">
+  <h4>JSONL 檔案預覽：</h4>
+  <pre>
+    {% for json_obj in previewData %}
+      {{ json_obj|replace('\n', '<br>')|safe }}  <!-- 替換換行符為<br>標籤 -->
+    {% endfor %}
+  </pre>
+</div>
+{% endif %}
 
   {% if result %}
   <div class="result">{{ result }}</div>
