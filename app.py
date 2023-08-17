@@ -188,8 +188,9 @@ def get_model_result(model_result_file_id):
 def benchmark():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
-    result = None
-
+    
+    results = []
+    
     if request.method == "POST":
         # 獲取上傳的檔案
         qna_data = request.files["qna_data"]
@@ -203,7 +204,6 @@ def benchmark():
             temp_file_path = os.path.join(tempfile.gettempdir(), secure_filename(qna_data.filename))
             qna_data.save(temp_file_path)
             # 呼叫generateAnswers函式取得模型問答結果
-            results = []
             for model_name in model_names:
                 model_result = benchmarkreport.generateAnswers(dataset_path=temp_file_path, model_name=model_name)
                 model_evaluation = benchmarkreport.evalWithRubric(model_result)
@@ -214,9 +214,7 @@ def benchmark():
                     "model_evaluation": model_evaluation
                 })
             os.remove(temp_file_path)
-            return render_template("api3.html", results=results)
-
-    return render_template("api3.html", results=None)
+    return render_template("api3.html", results=results)
 
 if __name__ == "__main__":
     app.run(debug=True)
