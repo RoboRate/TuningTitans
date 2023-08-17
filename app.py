@@ -44,8 +44,7 @@ def index():
 
     previewData = None  # 初始化檔案預覽內容為空
     filePath = None  # 初始化檔案路徑為空
-    #刪除暫存資料夾
-    atexit.register(cleanup)
+
     # 現在可以在這裡處理表單提交，因為使用者已經登入
     if request.method == "POST":
         files = request.files["fileToUpload"]
@@ -86,8 +85,7 @@ def cleanup():
         except Exception as e:
             print(f"Error while cleaning up: {e}")
 
-# 清理房子
-atexit.register(cleanup)
+
 @app.route("/finetuning", methods=["GET", "POST"])
 def finetuning():
     if not session.get("logged_in"):
