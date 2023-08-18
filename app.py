@@ -74,6 +74,7 @@ def index():
                         file.write(json.dumps(item, ensure_ascii=False) + '\n')
 
                 previewData = result
+                atexit.register(cleanup)
     return render_template("index.html", previewData=previewData, filePath=filePath)
 
 uploads=None
@@ -146,13 +147,13 @@ def train_model():
         learning_rate_multiplier=learning_rate_multiplier
     )
     
-    model_status = {
+    modelTrainingResult = {
         "fine_tuned_model": model_info["fine_tuned_model"],
         "model_id": model_info["id"],
         "status": model_info["status"]
     }
     
-    return render_template("api2.html", status=None, model_status=model_status)
+    return render_template("api2.html", status=None, modelTrainingResult=modelTrainingResult)
 
 
 @app.route("/get_model_status", methods=["GET"])
