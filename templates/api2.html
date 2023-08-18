@@ -10,16 +10,15 @@
   />
   <title>Fine-tuning Model</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
-  <link rel="icon" href="images/dog.png">
 </head>
 <body>
   <h2 class="center">
-    <a href="/qadesign">Q&A Design</a>
+    <a href="/">Q&A Design</a>
     <a href="/finetuning">Fine-tuning</a>
     <a href="/benchmark">Benchmark</a>
   </h2>
   <form action="/finetuning" method="post" enctype="multipart/form-data">
-    <h3 for="training_file">training_file<span style="color:red">*</span></h3>
+    <label for="training_file">training_file<span style="color:red">*</span></label>
     <input id="submit" type="file" name="training_file" accept=".jsonl" required />
     <span>*必填欄位，只能選jsonl檔案</span><br>
     <br>
@@ -31,8 +30,9 @@
     <br>
     <br>
   </form>
+
   <form>
-    <h4>檔案驗證狀態：</h4>
+    <label id="modelFinish">檔案驗證狀態：</label>
     {% if status %}
       <pre>{{ status.get('training_file_status', 'No status available') }}</pre>
       <pre>{{ status.get('validation_file_status', 'No status available') }}</pre>
@@ -40,8 +40,8 @@
       <pre>No status available</pre>
     {% endif %}
   </form>
-  <form action="/train_model" method="post">
 
+  <form action="/train_model" method="post">
     <label for="training_file">training_file.id<span style="color:red">*</span></label>
     <input id="submit" type="text" name="training_file"  />
     <br>
@@ -71,20 +71,36 @@
     <span>(defaults to 0.05, 0.1, or 0.2 depending on final batch_size)</span><br>
     <br>
     <input id="submit" type="submit" value="訓練模型" />
+    <br>
+    <br>
   </form>
+
+    <form>
+    <label>模型訓練狀態：</label>
+    {% if modelTrainingResult %}
+      <pre>{{ modelTrainingResult }}</pre>
+    {% else %}
+      <pre>No status available</pre>
+    {% endif %}
+    </form>
+  </form>
+
   <form action="/get_model_status" method="get">
     <label for="model_id">請輸入模型ID：</label>
     <input id="submit"  type="text" name="model_id" required>
     <input id="submit" type="submit" value="查詢訓練狀態" />
-    <h4>查詢模型訓練狀態：</h4>
+    <br>
+    <br>
+    <label>查詢模型訓練狀態：</label>
     {% if model_status %}
       <pre>{{ model_status }}</pre>
     {% else %}
       <pre>No status available</pre>
     {% endif %}
   </form>
+  
   <form>
-    <h4>模型訓練狀態：</h4>
+    <label>模型訓練完成：</label>
     {% if model_status and model_status.get('status') == 'succeeded' %}
         <pre>{{ model_status.get('result_files') }}</pre>
         {% for result_file in model_status.get('result_files', []) %}
