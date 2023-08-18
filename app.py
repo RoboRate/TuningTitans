@@ -1,7 +1,6 @@
 import os
-from flask import Flask, redirect, render_template, request, session, url_for, send_file,g
+from flask import Flask, redirect, render_template, request, session, url_for, send_file
 import openai
-import pymysql
 import shutil
 import json
 import tempfile
@@ -13,6 +12,7 @@ from werkzeug.utils import secure_filename
 import tempfile
 import atexit
 import shutil
+
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -37,7 +37,7 @@ def logout():
     session.pop("logged_in", None)
     return redirect(url_for("login"))
 
-@app.route("/qadesign", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def index():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
@@ -65,18 +65,18 @@ def index():
                 with open(filePath, 'w', encoding='utf-8') as file:
                     file.write(content)  # 將內容寫入文件
                     
-                
-                    # Generate the JSONL data from the uploaded documents轉檔JSONL神器
+                # Generate the JSONL data from the uploaded documents轉檔JSONL神器
                 result = createJsonlFromDocuments(temp_dir)  # 提供目錄路徑
                 output_file = os.path.join(uploads_directory, 'output.jsonl')
                     
                 with open(output_file, 'w', encoding='utf-8') as file:
                     for item in result:
                         file.write(json.dumps(item, ensure_ascii=False) + '\n')
-                    #return send_file(output_file, as_attachment=True)
+
                 previewData = result
-                atexit.register(cleanup)
+                a = atexit.register(cleanup)
     return render_template("index.html", previewData=previewData, filePath=filePath)
+
 uploads=None
 def cleanup():
     if uploads:

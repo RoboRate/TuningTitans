@@ -11,11 +11,11 @@
 
 <body>
   <h3 class="center">
-    <a href="/qadesign">Q&A Design</a>
+    <a href="/">Q&A Design</a>
     <a href="/finetuning">Fine-tuning</a>
     <a href="/benchmark">Benchmark</a>
   </h3>
-  <form action="/qadesign" method="post" enctype="multipart/form-data">
+  <form action="/" method="post" enctype="multipart/form-data">
     <h3>Upoload file</h3>
     <input id="submit" type="file" name="fileToUpload" accept=".txt" required />
     <input id="submit" type="submit"/>
@@ -28,15 +28,15 @@
   </div>
   {% endif %} -->
   {% if previewData %}
-<div class="preview">
-  <h4>JSONL 檔案預覽：</h4>
-  <pre>
-    {% for json_obj in previewData %}
-      {{ json_obj|replace('\n', '<br>')|safe }}  <!-- 替換換行符為<br>標籤 -->
-    {% endfor %}
-  </pre>
-</div>
-{% endif %}
+  <div class="preview">
+    <h4>JSONL 檔案預覽：</h4>
+    <pre>
+      {% for json_obj in previewData %}
+        {{ json_obj|replace('\n', '<br>')|safe }}  <!-- 替換換行符為<br>標籤 -->
+      {% endfor %}
+    </pre>
+  </div>
+  {% endif %}
 
   {% if result %}
   <div class="result">{{ result }}</div>
