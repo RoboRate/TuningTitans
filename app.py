@@ -74,7 +74,6 @@ def index():
                         file.write(json.dumps(item, ensure_ascii=False) + '\n')
 
                 previewData = result
-                a = atexit.register(cleanup)
     return render_template("index.html", previewData=previewData, filePath=filePath)
 
 uploads=None
