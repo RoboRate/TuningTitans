@@ -12,17 +12,17 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
 </head>
 <body>
-  <h2 class="center">
+  <h2 class="center1">
     <a href="/">Q&A Design</a>
     <a href="/finetuning">Fine-tuning</a>
     <a href="/benchmark">Benchmark</a>
   </h2>
-  <form action="/finetuning" method="post" enctype="multipart/form-data">
-    <label for="training_file">training_file<span style="color:red">*</span></label>
+  <form action="/fileValidation" method="post" enctype="multipart/form-data">
+    <label for="training_file">Training File<span style="color:red">*</span></label>
     <input id="submit" type="file" name="training_file" accept=".jsonl" required />
     <span>*必填欄位，只能選jsonl檔案</span><br>
     <br>
-    <label for="validation_file">validation_file<span style="color:red">*</span></label>
+    <label for="validation_file">Validation File<span style="color:red">*</span></label>
     <input id="submit" type="file" name="validation_file" accept=".jsonl" required />
     <span>*必填欄位，只能選jsonl檔案</span><br>
     <br>
@@ -32,7 +32,7 @@
   </form>
 
   <form>
-    <label id="modelFinish">檔案驗證狀態：</label>
+    <label id="fileValidation">檔案驗證狀態：</label>
     {% if status %}
       <pre>{{ status.get('training_file_status', 'No status available') }}</pre>
       <pre>{{ status.get('validation_file_status', 'No status available') }}</pre>
@@ -76,7 +76,7 @@
   </form>
 
     <form>
-    <label>模型訓練狀態：</label>
+    <label id="modelTrainingStatus">模型訓練狀態：</label>
     {% if modelTrainingResult %}
       <pre>{{ modelTrainingResult }}</pre>
     {% else %}
@@ -91,7 +91,7 @@
     <input id="submit" type="submit" value="查詢訓練狀態" />
     <br>
     <br>
-    <label>查詢模型訓練狀態：</label>
+    <label id="modelStatus">查詢模型訓練狀態：</label>
     {% if model_status %}
       <pre>{{ model_status }}</pre>
     {% else %}
@@ -100,7 +100,7 @@
   </form>
   
   <form>
-    <label>模型訓練完成：</label>
+    <label>模型訓練完成結果：</label>
     {% if model_status and model_status.get('status') == 'succeeded' %}
         <pre>{{ model_status.get('result_files') }}</pre>
         {% for result_file in model_status.get('result_files', []) %}
@@ -111,6 +111,15 @@
         <pre>Still Training or Training yet</pre>
     {% endif %}
 </form>
-
 </body>
+<script>
+  {% if scrollToResult %}
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var targetElement = document.getElementById("{{ scrollToResult }}");
+        if (targetElement) {
+            window.scrollTo(0, targetElement.offsetTop);
+        }
+    });
+  {% endif %}
+</script>
 </html>

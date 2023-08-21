@@ -12,61 +12,68 @@
   </head>
 
 <body>
-  <h3 class="center">
-    <a href="/">ConvertData</a>
+  <h2 class="center1">
+    <a href="/">Q&A Design</a>
     <a href="/finetuning">Fine-tuning</a>
     <a href="/benchmark">Benchmark</a>
-  </h3>
+  </h2>
   <form action="/benchmark" method="post" enctype="multipart/form-data">
     <div class="form-group">
-      <label for="fine_tuned_model_id">fine_tuned_model_id*:</label>
+      <label for="fine_tuned_model_id">Finetuned Model Name<span style="color:red">*</span>:</label>
       <input type="text" id="fine_tuned_model_id" name="fine_tuned_model_id" required />
     </div>
 
-    <h4 class="center">Q&A問答*:</h4>
+    <h4 class="center">Q&A 問答*:</h4>
     <div class="form-group">
       <label for="qna_data">上傳資料:</label>
       <input type="file" id="qna_data" name="qna_data" accept=".jsonl" required />
     </div>
-    <p class="center">（最多十題）上傳資料格式限定為JSONL，例如：</p>
-    <pre class="center">
+    <div class="form-group-button">
+      <input id="submit" type="submit" value="提交" />
+    </div>
+    <br>
+    <text class="center">（最多十題）上傳資料格式限定為 jsonl ，例如：</text>
+    <h3>
       {"prompt": "******西院餐廳二樓使用變質土豆炒菜,然後進行售賣。諮詢如何處理。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "是食品安全問題\n"}<br />
       {"prompt": "諮詢如何辦理餐飲行業的食品經營許可證。\n請問這是食品安全問題或非食品安全問題?\n", "completion": " 非食品安全問題\n"} <br />
       {"prompt": "擺攤店家報有人在吃霸王餐。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "非食品安全問題\n"} <br />
       {"prompt": "{想測試的問題}", "completion": "{標準答案}"} <br />
-    <div>示範資料取自:https://www.luge.ai/?ref=ruder.io#/luge/dataDetail?id=71</div>>
-    </pre>
-    <h4 class="center">Context:（請gpt-3.5-turbo打分數）</h4>
-    <p class="center">您是一個評分的老師，請透過學生的實際回答與標準回答的內容比較來做評估。<br />
-      評估學生的實際回答問題的表現。</p>
-    <p class="center">
+    </h3>
+    <label class="center">Context: </label>
+    <label class="center">
+      （使用以下 prompt 讓 gpt-3.5-turbo 對模型回答的答案與標準答案的差異打分數）</label>
+    <h3>您是一個評分的老師，請透過學生的實際回答與標準回答的內容比較來做評估。<br />
+      評估學生的實際回答問題的表現。</h3>
+    <h3>
       [評分邏輯]：<br />
       1. 將實際回答內容與標準回答內容進行比較，忽略風格、語法、順序或標點的差異。<br />
       2. 對於提出的問題，評估學生是否有回答相對應的答案，並且將學生的實際回答與標準回答進行比較。<br />
       3. 實際回答可能是標準回答的子集或超集，或者可能與標準回答有衝突。<br />
-      [評分資料結束]</p>
-    <p class="center">
+      [評分邏輯結束]</h3>
+    <h3>
       請你確定下方哪種情況適用，給予每個回答分數（最低0分~最高10分），並且回覆數字：<br />
-      (0分)實際回答跟標準回答沒有任何交集。<br />
-      (1~3分)實際回答只包含部分標準回答內容。<br />
-      (4~6分)實際回答大部分包含標準回答。<br />
-      (7~10分)實際回答與標準回答的內容相符。</p>
+      (0分) 實際回答跟標準回答沒有任何交集。<br />
+      (1~3分) 實際回答只包含部分標準回答內容。<br />
+      (4~6分) 實際回答大部分包含標準回答。<br />
+      (7~10分) 實際回答與標準回答的內容相符。</h3>
+    
 
-    <h4 class="center">產出benchmark report</h4>
-    <p>Your model answer sheet</p>
+    <h4 class="center">產出 Benchmark Report</h4>
+    <label >Your model's answer:</label>
     {% for entry in results %}
     <h2>Model Name: {{ entry.model_name }}</h2>
-    <h3>Your model answer sheet:</h3>
+    <label >Your model's answer sheet:</label>
     <pre>{{ entry.model_result | safe }}</pre>
-    <h3>Your model's score</h3>
+    <label >Your model's score</label>
     <pre>{{ entry.model_evaluation | safe }}</pre>
     {% endfor %}
+    
+    <h3>
+      說明:<br>
+      Question - Q&A問答裡的問題<br>
+      YourModelAnswer - 模型的回答<br>
+      IdealAnswer - Q&A問答裡的標準答案<br></h3>
 
-    <h4 class="center">Question:Q&A問答裡的問題；YourModelAnswer: 模型的回答；IdealAnswer: Q&A問答裡的標準答案</h4>
-
-    <div class="form-group-button">
-      <input id="submit" type="submit" value="提交" />
-    </div>
   </form>
 </body>
 
