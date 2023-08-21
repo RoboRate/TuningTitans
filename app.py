@@ -52,7 +52,6 @@ def index():
             filename = files.filename
             if filename.endswith(".txt") or filename.endswith(".csv"):
                 content = files.read().decode("utf-8")
-                #previewData = content  # 將檔案內容傳遞到前端供預覽
                 
                 # Create an uploads_directory to store the uploaded files
                 uploads_directory = './uploads'
@@ -224,7 +223,14 @@ def benchmark():
                     "model_evaluation": model_evaluation
                 })
             os.remove(temp_file_path)
-    return render_template("api3.html", results=results)
+    return render_template("api3.html", results=results, scrollToResult="BenchmarkReport")
+
+@app.route("/benchmarkPage", methods=["GET", "POST"])
+def benchmarkPage():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    return render_template("api3.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
