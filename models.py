@@ -4,14 +4,23 @@ from langchain.document_loaders import DirectoryLoader
 import json
 from langchain.document_loaders.csv_loader import CSVLoader
 import os
+import codecs
+
 
 def createJsonlFromDocuments(directory_path):
     csv_files = [f for f in os.listdir(directory_path) if f.lower().endswith('.csv')]
+    result = []
+
     if csv_files:
         for csv_file in csv_files:
             csv_file_path = os.path.join(directory_path, csv_file)
-            loader = CSVLoader(file_path=csv_file_path)
+            with codecs.open(csv_file_path, 'r', encoding='utf-8') as csv_file:
+                csv_data = csv_file.readlines()
+                
+            # 使用 csv_data 加载 CSV 文件中的数据
+            loader = CSVLoader(file_path=csv_file_path,encoding='utf-8')
             data = loader.load()
+
             text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
             split_docs = text_splitter.split_documents(data)
 
