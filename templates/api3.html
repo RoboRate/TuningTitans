@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
   <head>
     <link rel="shortcut icon" href="{{ url_for('static', filename='/images/Roboo.png') }}" />
     <meta charset="UTF-8">
@@ -10,19 +8,23 @@
     <title>Benchmark</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='/css/neon.css') }}" />
   </head>
-
 <body>
   <h2 class="center1">
     <a href="/">Q&A Design</a>
     <a href="/finetuning">Fine-tuning</a>
-    <a href="/benchmark">Benchmark</a>
+    <a href="/benchmarkPage">Benchmark</a>
   </h2>
-  <form action="/benchmark" method="post" enctype="multipart/form-data">
+
+  <div id="loading-overlay" class="overlay">
+    <div class="loader"></div>
+    <p>處理中，請稍後...</p>
+  </div>
+
+  <form action="/benchmark" method="post" enctype="multipart/form-data" id="benchmark-form">
     <div class="form-group">
       <label for="fine_tuned_model_id">Finetuned Model Name<span style="color:red">*</span>:</label>
-      <input type="text" id="fine_tuned_model_id" name="fine_tuned_model_id" required />
+      <input type="text" id="submit" name="fine_tuned_model_id" required />
     </div>
-
     <h4 class="center">Q&A 問答*:</h4>
     <div class="form-group">
       <label for="qna_data">上傳資料:</label>
@@ -32,16 +34,18 @@
       <input id="submit" type="submit" value="提交" />
     </div>
     <br>
-    <text class="center">（最多十題）上傳資料格式限定為 jsonl ，例如：</text>
+    <text class="center">上傳資料格式限定為 jsonl （最多十題），例如：
+    <br>{"prompt": "{想測試的問題}", "completion": "{標準答案}"}
+    </text>
     <h3>
-      {"prompt": "******西院餐廳二樓使用變質土豆炒菜,然後進行售賣。諮詢如何處理。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "是食品安全問題\n"}<br />
+      {"prompt": "******西式餐廳二樓使用變質馬鈴薯炒菜,然後進行售賣。諮詢如何處理。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "是食品安全問題\n"}<br />
       {"prompt": "諮詢如何辦理餐飲行業的食品經營許可證。\n請問這是食品安全問題或非食品安全問題?\n", "completion": " 非食品安全問題\n"} <br />
       {"prompt": "擺攤店家報有人在吃霸王餐。\n請問這是食品安全問題或非食品安全問題?\n", "completion": "非食品安全問題\n"} <br />
-      {"prompt": "{想測試的問題}", "completion": "{標準答案}"} <br />
+      <br/>
     </h3>
     <label class="center">Context: </label>
     <label class="center">
-      （使用以下 prompt 讓 gpt-3.5-turbo 對模型回答的答案與標準答案的差異打分數）</label>
+      （使用以下 prompt 讓 GPT-3.5-turbo 對模型回答的答案與標準答案的差異打分數）</label>
     <h3>您是一個評分的老師，請透過學生的實際回答與標準回答的內容比較來做評估。<br />
       評估學生的實際回答問題的表現。</h3>
     <h3>
@@ -57,17 +61,20 @@
       (4~6分) 實際回答大部分包含標準回答。<br />
       (7~10分) 實際回答與標準回答的內容相符。</h3>
     
-
-    <h4 class="center">產出 Benchmark Report</h4>
-    <label >Your model's answer:</label>
+    <h4 class="center" id="BenchmarkReport">產出 Benchmark Report</h4>
+    <label>Your model's answer:</label><br>
+    <hr />
     {% for entry in results %}
-    <h2>Model Name: {{ entry.model_name }}</h2>
+    <label>Model Name:</label>
+    <pre> {{ entry.model_name }}</pre>
     <label >Your model's answer sheet:</label>
-    <pre>{{ entry.model_result | safe }}</pre>
+    <pre>{{ entry.model_result | replace(', ', '<br>') |safe }}</pre>
     <label >Your model's score</label>
-    <pre>{{ entry.model_evaluation | safe }}</pre>
+    <pre>{{ entry.model_evaluation | replace(', ', '<br>') | safe  }}</pre>
+    <hr />
+
     {% endfor %}
-    
+
     <h3>
       說明:<br>
       Question - Q&A問答裡的問題<br>
@@ -76,5 +83,25 @@
 
   </form>
 </body>
+<script>
+  {% if scrollToResult %}
+    document.addEventListener("DOMContentLoaded", function(event) {
+        var targetElement = document.getElementById("{{ scrollToResult }}");
+        if (targetElement) {
+            window.scrollTo(0, targetElement.offsetTop);
+        }
+    });
+  {% endif %}
 
+  document.addEventListener("DOMContentLoaded", function(event) {
+    var loadingOverlay = document.getElementById("loading-overlay");
+    var benchmarkForm = document.getElementById("benchmark-form");
+
+    if (benchmarkForm) {
+      benchmarkForm.addEventListener("submit", function() {
+        loadingOverlay.style.display = "block";
+      });
+    }
+  });
+</script>
 </html>
