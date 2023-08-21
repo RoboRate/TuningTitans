@@ -10,31 +10,31 @@
 </head>
 
 <body>
-  <h3 class="center">
+  <h2 class="center1">
     <a href="/">Q&A Design</a>
     <a href="/finetuning">Fine-tuning</a>
-    <a href="/benchmark">Benchmark</a>
-  </h3>
-  <form action="/" method="post" enctype="multipart/form-data">
+    <a href="/benchmarkPage">Benchmark</a>
+  </h2>
+
+  <div id="loading-overlay" class="overlay">
+    <div class="loader"></div>
+    <p>處理中，請稍後...</p>
+  </div>
+  
+  <form action="/" method="post" enctype="multipart/form-data" id="fileCheckForm">
     <h3>Upoload file</h3>
     <input id="submit" type="file" name="fileToUpload" accept=".csv, .txt" required />
     <input id="submit" type="submit"/>
   </form>
 
-  <!-- {% if previewData %}
-  <div class="preview">
-    <h4>檔案預覽：</h4>
-    <pre>{{ previewData }}</pre>
-  </div>
-  {% endif %} -->
   {% if previewData %}
-  <div class="preview">
-    <h4>JSONL 檔案預覽：</h4>
-    <pre>
+  <div class="preview" >
+    <h4><p>&emsp;&emsp;JSONL 檔案預覽：</h4></p>
       {% for json_obj in previewData %}
-        {{ json_obj|replace('\n', '<br>')|safe }}  <!-- 替換換行符為<br>標籤 -->
+      <pre>
+        {{ json_obj|replace('\n', '<br>' | safe)}}
+      </pre>
       {% endfor %}
-    </pre>
   </div>
   {% endif %}
 
@@ -48,3 +48,15 @@
   </div>
   {% endif %}
 </body>
+<script>
+  document.addEventListener("DOMContentLoaded", function(event) {
+    var loadingOverlay = document.getElementById("loading-overlay");
+    var fileValidationForm = document.getElementById("fileCheckForm");
+
+    if (fileValidationForm) {
+      fileValidationForm.addEventListener("submit", function() {
+        loadingOverlay.style.display = "block";
+      });
+    }
+  });
+</script>

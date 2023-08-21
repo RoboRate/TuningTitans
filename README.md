@@ -45,3 +45,9 @@ This is an example pet name generator app used in the OpenAI API [quickstart tut
    ```
 
 You should now be able to access the app at [http://localhost:5000](http://localhost:5000)! For the full context behind this example app, check out the [tutorial](https://beta.openai.com/docs/quickstart).
+
+
+## Reference
+本平台的食品安全示範資料集整理自中文開源數據平台千言-袁杰等人的「[食品安全主題數據集](https://www.luge.ai/?ref=ruder.io#/luge/dataDetail?id=71)」，僅將其數據內容用於研究和學習目的。
+
+The Mandarin food safety demonstration dataset on this platform has been compiled from the '[Food Safety Themed Dataset](https://www.luge.ai/?ref=ruder.io#/luge/dataDetail?id=71)' by Yuan Jie, et al. on Qianyan . We are using the data content solely for research and educational purposes.

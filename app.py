@@ -52,7 +52,6 @@ def index():
             filename = files.filename
             if filename.endswith(".txt") or filename.endswith(".csv"):
                 content = files.read().decode("utf-8")
-                #previewData = content  # 將檔案內容傳遞到前端供預覽
                 
                 # Create an uploads_directory to store the uploaded files
                 uploads_directory = './uploads'
@@ -85,9 +84,15 @@ def cleanup():
         except Exception as e:
             print(f"Error while cleaning up: {e}")
 
-
 @app.route("/finetuning", methods=["GET", "POST"])
 def finetuning():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    
+    return render_template("api2.html")
+
+@app.route("/fileValidation", methods=["GET", "POST"])
+def fileValidation():
     if not session.get("logged_in"):
         return redirect(url_for("login"))
     
@@ -123,7 +128,7 @@ def finetuning():
                 "validation_file_status": validation_file_status
             }
             
-    return render_template("api2.html", status=status)
+    return render_template("api2.html",scrollToResult="fileValidation", status=status)
 
 @app.route("/train_model", methods=["POST"])
 def train_model():
@@ -153,7 +158,7 @@ def train_model():
         "status": model_info["status"]
     }
     
-    return render_template("api2.html", status=None, modelTrainingResult=modelTrainingResult)
+    return render_template("api2.html", status=None, modelTrainingResult=modelTrainingResult, scrollToResult="modelTrainingStatus")
 
 
 @app.route("/get_model_status", methods=["GET"])
@@ -167,7 +172,7 @@ def get_model_status():
         # 呼叫 modelStatusCheck 函式取得模型訓練狀態
         model_status = createModel.modelStatusCheck(model_id)
         
-    return render_template("api2.html", model_status=model_status)
+    return render_template("api2.html", model_status=model_status,scrollToResult="modelStatus")
 
 
 @app.route("/get_model_result/<model_result_file_id>")
@@ -218,7 +223,14 @@ def benchmark():
                     "model_evaluation": model_evaluation
                 })
             os.remove(temp_file_path)
-    return render_template("api3.html", results=results)
+    return render_template("api3.html", results=results, scrollToResult="BenchmarkReport")
+
+@app.route("/benchmarkPage", methods=["GET", "POST"])
+def benchmarkPage():
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+    return render_template("api3.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
