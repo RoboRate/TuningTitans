@@ -10,7 +10,6 @@ import finetunePrepareData as prepareData
 import Benchmark as benchmarkreport
 from werkzeug.utils import secure_filename
 import tempfile
-import atexit
 import shutil
 
 app = Flask(__name__)
@@ -73,16 +72,8 @@ def index():
                         file.write(json.dumps(item, ensure_ascii=False) + '\n')
 
                 previewData = result
-                atexit.register(cleanup)
+                shutil.rmtree(temp_dir)
     return render_template("index.html", previewData=previewData, filePath=filePath)
-
-uploads=None
-def cleanup():
-    if uploads:
-        try:
-            shutil.rmtree(uploads)  # 直接刪除整個文件夾及其內容
-        except Exception as e:
-            print(f"Error while cleaning up: {e}")
 
 @app.route("/finetuning", methods=["GET", "POST"])
 def finetuning():
