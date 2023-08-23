@@ -8,29 +8,24 @@ import codecs
 
 
 def createJsonlFromDocuments(directory_path):
+    # 從指定目錄中列出所有的 .csv 文件
     csv_files = [f for f in os.listdir(directory_path) if f.lower().endswith('.csv')]
-    result = []
-
+    
     if csv_files:
+        result = []# 儲存處理後的結果
+        # 遍歷每個 .csv 文件
         for csv_file in csv_files:
             csv_file_path = os.path.join(directory_path, csv_file)
-            with codecs.open(csv_file_path, 'r', encoding='utf-8') as csv_file:
-                csv_data = csv_file.readlines()
-                
-            # 使用 csv_data 加载 CSV 文件中的数据
-            loader = CSVLoader(file_path=csv_file_path,encoding='utf-8')
-            data = loader.load()
-
-            text_splitter = CharacterTextSplitter(chunk_size=100, chunk_overlap=0)
-            split_docs = text_splitter.split_documents(data)
-
-            result = []
-
-            for i in range(len(split_docs) - 1):
-                prompt_text = split_docs[i].page_content # prompt_text是前一個文本塊的內容
-                ideal_generated_text = split_docs[i + 1].page_content # ideal_generated_text是後一個文本塊的內容
-                result.append({"prompt": prompt_text, "completion": ideal_generated_text})
-
+            with open(csv_file_path, 'r', encoding='utf-8') as csv_file:
+                lines = csv_file.readlines()
+            # 遍歷每行內容    
+            for line in lines:
+                values = line.strip().split(',')
+                if len(values) == 2:
+                    prompt, completion = values
+                    # 將提示和完成內容添加到結果列表中
+                    result.append({"prompt": prompt, "completion": completion})
+        # 返回處理後的結果
         return result
     
     loader = DirectoryLoader(directory_path, glob='**/*.txt', silent_errors=True)

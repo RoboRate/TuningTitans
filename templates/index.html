@@ -41,10 +41,10 @@
   {% if result %}
   <div class="result">{{ result }}</div>
   {% endif %}
-
-  {% if file_path %}
+  
+  {% if download_file %}
   <div class="download">
-    <a href="{{ file_path }}" download>Download File</a>
+    <a href="{{ download_file }}" download>Download File</a>
   </div>
   {% endif %}
 </body>

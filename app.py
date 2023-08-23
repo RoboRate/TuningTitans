@@ -38,42 +38,53 @@ def logout():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    # 如果未登入，導向登入頁面
     if not session.get("logged_in"):
         return redirect(url_for("login"))
 
     previewData = None  # 初始化檔案預覽內容為空
     filePath = None  # 初始化檔案路徑為空
+    download_file = None  # 初始化文件下載連結為空
 
-    # 現在可以在這裡處理表單提交，因為使用者已經登入
+    # 如果收到 POST 請求
     if request.method == "POST":
         files = request.files["fileToUpload"]
         if files:
             filename = files.filename
+            # 檢查文件是否以 .txt 或 .csv 結尾
             if filename.endswith(".txt") or filename.endswith(".csv"):
                 content = files.read().decode("utf-8")
-                
-                # Create an uploads_directory to store the uploaded files
+
+                # 處理文件上傳並生成 JSONL 數據
                 uploads_directory = './uploads'
                 os.makedirs(uploads_directory, exist_ok=True)
-                
-                # 儲存上傳的檔案至伺服器端，以便下載
                 temp_dir = tempfile.mkdtemp(dir=uploads_directory)
                 filePath = os.path.join(temp_dir, filename)
-                
+
                 with open(filePath, 'w', encoding='utf-8') as file:
-                    file.write(content)  # 將內容寫入文件
-                    
-                # Generate the JSONL data from the uploaded documents轉檔JSONL神器
-                result = createJsonlFromDocuments(temp_dir)  # 提供目錄路徑
+                    file.write(content)
+                #對文件開始處理........    
+                result = createJsonlFromDocuments(temp_dir)
                 output_file = os.path.join(uploads_directory, 'output.jsonl')
-                    
+
                 with open(output_file, 'w', encoding='utf-8') as file:
                     for item in result:
                         file.write(json.dumps(item, ensure_ascii=False) + '\n')
-
                 previewData = result
-                shutil.rmtree(temp_dir)
-    return render_template("index.html", previewData=previewData, filePath=filePath)
+
+                # 設置文件下載連結
+                download_file = url_for('download_file')
+
+    # 渲染模板並將變數傳遞到前端
+    return render_template("index.html", previewData=previewData, filePath=filePath, download_file=download_file)
+
+# 文件下載路由
+@app.route("/download_file")
+def download_file():
+    # 請替換為實際生成的輸出文件的路徑
+    output_file_path = "./uploads/output.jsonl"
+    return send_file(output_file_path, as_attachment=True)
+
 
 @app.route("/finetuning", methods=["GET", "POST"])
 def finetuning():
